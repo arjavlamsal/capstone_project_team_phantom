@@ -8,6 +8,8 @@ export const metadata = {
   description: 'CSC 489 Web Application Security',
 }
 
+import './globals.css';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

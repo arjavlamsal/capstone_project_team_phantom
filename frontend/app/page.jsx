@@ -1,678 +1,260 @@
-/**
- * Home Page - Capstone Project Starter Template
- * CSC 489 - Spring 2026
- * 
- * A beautiful, professional welcome page to inspire students
- */
-
 'use client';
 
 import { useState, useEffect } from 'react';
 
+// Mock Data
+const propertyTypes = [
+  { name: 'Hotels', count: '921,833 hotels', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&auto=format' },
+  { name: 'Apartments', count: '916,105 apartments', image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&auto=format' },
+  { name: 'Resorts', count: '178,391 resorts', image: 'https://images.unsplash.com/photo-1540541338287-41700207def5?w=500&auto=format' },
+  { name: 'Villas', count: '516,403 villas', image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500&auto=format' },
+  { name: 'Cabins', count: '41,105 cabins', image: 'https://images.unsplash.com/photo-1449156001427-af560f65b06d?w=500&auto=format' },
+  { name: 'Cottages', count: '14,833 cottages', image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500&auto=format' },
+];
+
+const trendingDestinations = [
+  { name: 'Tokyo', country: 'Japan', image: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800&auto=format' },
+  { name: 'Bali', country: 'Indonesia', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&auto=format' },
+  { name: 'Paris', country: 'France', image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&auto=format' },
+  { name: 'London', country: 'United Kingdom', image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&auto=format' },
+  { name: 'New York', country: 'USA', image: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&auto=format' },
+];
+
+const homeProperties = [
+  { name: 'Aparthotel Stare Miasto', city: 'Old Town, Poland', price: '€ 120', rating: 8.9, reviews: 2100, image: 'https://images.unsplash.com/photo-1551882547-ff43c69e5cfd?w=400&auto=format' },
+  { name: 'Comfort Suites Airport', city: 'Austin, USA', price: '€ 140', rating: 9.3, reviews: 1540, image: 'https://images.unsplash.com/photo-1541971875076-8f970d573be6?w=400&auto=format' },
+  { name: 'Four Seasons Hotel', city: 'Lisbon, Portugal', price: '€ 99', rating: 8.8, reviews: 890, image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&auto=format' },
+  { name: 'Sun & Sea Resort', city: 'Maldives', price: '€ 340', rating: 9.9, reviews: 102, image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&auto=format' },
+];
+
 export default function Home() {
   const [backendStatus, setBackendStatus] = useState('checking');
-  const [showQuickStart, setShowQuickStart] = useState(false);
-  
+
   useEffect(() => {
-    // Try localhost first, then 127.0.0.1 as fallback
     fetch('http://localhost:5000/api/test')
-      .then(res => {
-        if (!res.ok) throw new Error('HTTP error');
-        return res.json();
-      })
-      .then(data => {
-        console.log('Backend response:', data);
-        setBackendStatus('connected');
-      })
-      .catch(err => {
-        console.log('localhost failed, trying 127.0.0.1...', err);
-        // Try 127.0.0.1 as fallback
-        fetch('http://127.0.0.1:5000/api/test')
-          .then(res => res.json())
-          .then(data => {
-            console.log('Backend response (127.0.0.1):', data);
-            setBackendStatus('connected');
-          })
-          .catch(err2 => {
-            console.error('Backend connection failed:', err, err2);
-            setBackendStatus('disconnected');
-          });
-      });
+      .then(res => res.ok ? res.json() : null)
+      .then(data => setBackendStatus('connected'))
+      .catch(() => setBackendStatus('disconnected'));
   }, []);
 
   return (
-    <div style={styles.pageContainer}>
-      {/* Hero Section */}
-      <header style={styles.hero}>
-        <div style={styles.heroContent}>
-          <div style={styles.badge}>CSC 489 • Spring 2026</div>
-          <h1 style={styles.heroTitle}>
-            Build Something <span style={styles.gradient}>Amazing</span>
-          </h1>
-          <p style={styles.heroSubtitle}>
-            Your capstone project starts here. Create a unique web application, 
-            implement security vulnerabilities, and demonstrate your mastery of web security.
-          </p>
-          
-          {/* Status Indicator */}
-          <div style={{
-            ...styles.statusBadge,
-            ...(backendStatus === 'connected' ? styles.statusConnected : 
-                backendStatus === 'disconnected' ? styles.statusDisconnected : 
-                styles.statusChecking)
-          }}>
-            <span style={styles.statusDot}></span>
-            {backendStatus === 'connected' && 'Backend Connected'}
-            {backendStatus === 'disconnected' && 'Backend Offline - Start Flask Server'}
-            {backendStatus === 'checking' && 'Checking Backend...'}
+    <div className="home-page">
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="container nav-content">
+          <div className="logo">Booking.com</div>
+          <div className="nav-items">
+            <span className="nav-link">GBP</span>
+            <span className="nav-link">🇬🇧</span>
+            <span className="nav-link">List your property</span>
+            <button className="btn-secondary">Register</button>
+            <button className="btn-secondary">Sign in</button>
           </div>
+        </div>
+      </nav>
 
-          <button 
-            style={styles.ctaButton}
-            onClick={() => setShowQuickStart(!showQuickStart)}
-            onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
-            onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
-          >
-            {showQuickStart ? '↑ Hide Quick Start' : '↓ Quick Start Guide'}
-          </button>
+      {/* Header Links */}
+      <header className="header-links">
+        <div className="container">
+          <ul className="header-links-list">
+            <li className="header-links-item active">🛏 Stays</li>
+            <li className="header-links-item">✈️ Flights</li>
+            <li className="header-links-item">🚘 Car rentals</li>
+            <li className="header-links-item">🏛 Attractions</li>
+            <li className="header-links-item">🚕 Airport taxis</li>
+          </ul>
+
+          <div className="hero">
+            <h1 className="hero-title">Find your next stay</h1>
+            <p className="hero-subtitle">Search deals on hotels, homes, and much more...</p>
+          </div>
         </div>
       </header>
 
-      {/* Quick Start (Collapsible) */}
-      {showQuickStart && (
-        <section style={styles.quickStart}>
-          <div style={styles.container}>
-            <h2 style={styles.sectionTitle}>🚀 Quick Start</h2>
-            <div style={styles.grid}>
-              <div style={styles.stepCard}>
-                <div style={styles.stepNumber}>1</div>
-                <h3 style={styles.stepTitle}>Start Backend</h3>
-                <code style={styles.code}>cd backend && python app.py</code>
-                <p style={styles.stepDescription}>Flask server runs on port 5000</p>
+      {/* Search Section */}
+      <div className="container search-container">
+        <div className="search-bar">
+          <div className="search-field">
+            <span>🛏</span>
+            <input type="text" placeholder="Where are you going?" />
+          </div>
+          <div className="search-field">
+            <span>📅</span>
+            <input type="text" placeholder="Check-in — Check-out" />
+          </div>
+          <div className="search-field">
+            <span>👤</span>
+            <input type="text" placeholder="2 adults · 0 children · 1 room" />
+          </div>
+          <button className="search-btn">Search</button>
+        </div>
+      </div>
+
+      <main className="container section">
+        {/* Backend Status (Affixed to the bottom or integrated into the UI) */}
+        <div style={{
+          padding: '12px',
+          borderRadius: 'var(--border-radius-sm)',
+          backgroundColor: backendStatus === 'connected' ? 'rgba(0, 128, 9, 0.1)' : 'rgba(212, 17, 30, 0.1)',
+          color: backendStatus === 'connected' ? 'var(--booking-success)' : 'var(--booking-error)',
+          marginBottom: '24px',
+          fontSize: '14px',
+          fontWeight: '600',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <span style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: 'currentColor'
+          }}></span>
+          {backendStatus === 'connected' ? 'Backend Services Operational' : 'Offline: Start Flask API (port 5000)'}
+        </div>
+
+        {/* Property Types */}
+        <section className="section">
+          <div className="section-header">
+            <h2 className="section-title">Browse by property type</h2>
+          </div>
+          <div className="grid grid-6">
+            {propertyTypes.map((type, i) => (
+              <div key={i} className="card prop-type-card">
+                <img src={type.image} alt={type.name} className="prop-type-img" />
+                <div className="card-title">{type.name}</div>
+                <div className="card-subtitle">{type.count}</div>
               </div>
-              <div style={styles.stepCard}>
-                <div style={styles.stepNumber}>2</div>
-                <h3 style={styles.stepTitle}>Start Frontend</h3>
-                <code style={styles.code}>cd frontend && npm run dev</code>
-                <p style={styles.stepDescription}>Next.js runs on port 3000</p>
-              </div>
-              <div style={styles.stepCard}>
-                <div style={styles.stepNumber}>3</div>
-                <h3 style={styles.stepTitle}>Start Building</h3>
-                <code style={styles.code}>See guides below ↓</code>
-                <p style={styles.stepDescription}>Customize and create!</p>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
-      )}
 
-      {/* Main Content */}
-      <main style={styles.main}>
-        <div style={styles.container}>
-          
-          {/* What You'll Build */}
-          <section style={styles.section}>
-            <h2 style={styles.sectionTitle}>💡 What Will You Build?</h2>
-            <div style={styles.ideaGrid}>
-              <div style={styles.ideaCard}>
-                <div style={styles.ideaIcon}>🛒</div>
-                <h3 style={styles.ideaTitle}>Marketplace</h3>
-                <p style={styles.ideaText}>
-                  Campus marketplace, auction site, peer-to-peer trading platform
-                </p>
-              </div>
-              <div style={styles.ideaCard}>
-                <div style={styles.ideaIcon}>💬</div>
-                <h3 style={styles.ideaTitle}>Social Platform</h3>
-                <p style={styles.ideaText}>
-                  Anonymous posts, study groups, confession board, community forum
-                </p>
-              </div>
-              <div style={styles.ideaCard}>
-                <div style={styles.ideaIcon}>📝</div>
-                <h3 style={styles.ideaTitle}>Productivity</h3>
-                <p style={styles.ideaText}>
-                  Task manager, note sharing, event planner, collaborative workspace
-                </p>
-              </div>
-              <div style={styles.ideaCard}>
-                <div style={styles.ideaIcon}>🎮</div>
-                <h3 style={styles.ideaTitle}>Entertainment</h3>
-                <p style={styles.ideaText}>
-                  Quiz platform, meme generator, leaderboards, gaming stats tracker
-                </p>
-              </div>
-              <div style={styles.ideaCard}>
-                <div style={styles.ideaIcon}>💳</div>
-                <h3 style={styles.ideaTitle}>Finance</h3>
-                <p style={styles.ideaText}>
-                  Expense tracker, peer payments, budget planner, crypto wallet
-                </p>
-              </div>
-              <div style={styles.ideaCard}>
-                <div style={styles.ideaIcon}>✨</div>
-                <h3 style={styles.ideaTitle}>Your Idea!</h3>
-                <p style={styles.ideaText}>
-                  Build anything you want - be creative and make it unique
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Tech Stack */}
-          <section style={styles.section}>
-            <h2 style={styles.sectionTitle}>🛠️ Your Tech Stack</h2>
-            <div style={styles.techGrid}>
-              <div style={styles.techCard}>
-                <div style={styles.techName}>Next.js 14</div>
-                <div style={styles.techDesc}>Modern React framework</div>
-              </div>
-              <div style={styles.techCard}>
-                <div style={styles.techName}>Flask 3.0</div>
-                <div style={styles.techDesc}>Python web framework</div>
-              </div>
-              <div style={styles.techCard}>
-                <div style={styles.techName}>SQLite 3</div>
-                <div style={styles.techDesc}>Lightweight database</div>
-              </div>
-            </div>
-          </section>
-
-          {/* Next Steps */}
-          <section style={styles.section}>
-            <h2 style={styles.sectionTitle}>📚 Resources at Your Fingertips</h2>
-            <div style={styles.resourceGrid}>
-              <a href="#" style={styles.resourceCard} 
-                 onMouseEnter={(e) => e.target.style.transform = 'translateY(-4px)'}
-                 onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}>
-                <div style={styles.resourceIcon}>📦</div>
-                <h3 style={styles.resourceTitle}>AI Prompt Library</h3>
-                <p style={styles.resourceDesc}>
-                  50+ ready-to-use prompts for ChatGPT/Claude to generate features instantly
-                </p>
-                <div style={styles.resourceTag}>Canvas Files</div>
-              </a>
-              
-              <a href="#" style={styles.resourceCard}
-                 onMouseEnter={(e) => e.target.style.transform = 'translateY(-4px)'}
-                 onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}>
-                <div style={styles.resourceIcon}>🔓</div>
-                <h3 style={styles.resourceTitle}>Vulnerability Guide</h3>
-                <p style={styles.resourceDesc}>
-                  Code examples for SQL injection, XSS, CSRF, IDOR, and more
-                </p>
-                <div style={styles.resourceTag}>Canvas Files</div>
-              </a>
-              
-              <a href="#" style={styles.resourceCard}
-                 onMouseEnter={(e) => e.target.style.transform = 'translateY(-4px)'}
-                 onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}>
-                <div style={styles.resourceIcon}>⚡</div>
-                <h3 style={styles.resourceTitle}>Quick Reference</h3>
-                <p style={styles.resourceDesc}>
-                  Setup, troubleshooting, common commands - everything you need
-                </p>
-                <div style={styles.resourceTag}>Canvas Files</div>
-              </a>
-            </div>
-          </section>
-
-          {/* Getting Started Steps */}
-          <section style={styles.section}>
-            <h2 style={styles.sectionTitle}>🎯 Your Roadmap</h2>
-            <div style={styles.roadmap}>
-              <div style={styles.roadmapItem}>
-                <div style={styles.roadmapNumber}>1</div>
-                <div style={styles.roadmapContent}>
-                  <h3 style={styles.roadmapTitle}>Brainstorm with Your Team</h3>
-                  <p style={styles.roadmapDesc}>
-                    Choose what to build. Make it creative, make it yours!
-                  </p>
+        {/* Trending Destinations */}
+        <section className="section">
+          <div className="section-header">
+            <h2 className="section-title">Trending destinations</h2>
+            <p className="section-subtitle">Most popular choices for travelers from USA</p>
+          </div>
+          <div className="grid grid-3">
+            {trendingDestinations.slice(0, 3).map((dest, i) => (
+              <div key={i} className="dest-card">
+                <img src={dest.image} alt={dest.name} className="dest-img" />
+                <div className="dest-overlay">
+                  <div className="dest-name">{dest.name} 🏙️</div>
+                  <div>{dest.country}</div>
                 </div>
               </div>
-              <div style={styles.roadmapItem}>
-                <div style={styles.roadmapNumber}>2</div>
-                <div style={styles.roadmapContent}>
-                  <h3 style={styles.roadmapTitle}>Use AI to Build Fast</h3>
-                  <p style={styles.roadmapDesc}>
-                    Check the AI Prompt Library - generate features in minutes, not hours
-                  </p>
+            ))}
+          </div>
+          <div className="grid grid-2" style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+            {trendingDestinations.slice(3, 5).map((dest, i) => (
+              <div key={i} className="dest-card">
+                <img src={dest.image} alt={dest.name} className="dest-img" />
+                <div className="dest-overlay">
+                  <div className="dest-name">{dest.name} 🏙️</div>
+                  <div>{dest.country}</div>
                 </div>
               </div>
-              <div style={styles.roadmapItem}>
-                <div style={styles.roadmapNumber}>3</div>
-                <div style={styles.roadmapContent}>
-                  <h3 style={styles.roadmapTitle}>Implement Vulnerabilities</h3>
-                  <p style={styles.roadmapDesc}>
-                    Add 6+ intentional security flaws using the Vulnerability Guide
-                  </p>
-                </div>
-              </div>
-              <div style={styles.roadmapItem}>
-                <div style={styles.roadmapNumber}>4</div>
-                <div style={styles.roadmapContent}>
-                  <h3 style={styles.roadmapTitle}>Test & Document</h3>
-                  <p style={styles.roadmapDesc}>
-                    Make sure everything works, take screenshots, write your README
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
+            ))}
+          </div>
+        </section>
 
-          {/* Footer CTA */}
-          <section style={styles.footerCTA}>
-            <h2 style={styles.ctaTitle}>Ready to Build Something Unique?</h2>
-            <p style={styles.ctaText}>
-              This template is just the beginning. Customize everything, add your features,
-              and create a portfolio-worthy project that showcases your skills.
-            </p>
-            <div style={styles.ctaButtons}>
-              <a 
-                href="http://localhost:5000" 
-                target="_blank" 
-                style={styles.linkButton}
-                onMouseEnter={(e) => e.target.style.opacity = '0.8'}
-                onMouseLeave={(e) => e.target.style.opacity = '1'}
-              >
-                View Backend API →
-              </a>
-              <a 
-                href="https://nextjs.org/docs" 
-                target="_blank" 
-                style={styles.linkButtonSecondary}
-                onMouseEnter={(e) => e.target.style.opacity = '0.8'}
-                onMouseLeave={(e) => e.target.style.opacity = '1'}
-              >
-                Next.js Docs →
-              </a>
-            </div>
-          </section>
+        {/* Homes guests love */}
+        <section className="section">
+          <div className="section-header">
+            <h2 className="section-title">Homes guests love</h2>
+          </div>
+          <div className="grid grid-4">
+            {homeProperties.map((prop, i) => (
+              <div key={i} className="card" style={{ animation: `fadeIn 0.5s ease forwards ${0.1 * i}s`, opacity: 0 }}>
+                <img src={prop.image} alt={prop.name} className="card-img" />
+                <div className="card-content">
+                  <div className="card-title" style={{ transition: 'color 0.2s' }}>{prop.name}</div>
+                  <div className="card-subtitle">{prop.city}</div>
+                  <div style={{ fontWeight: '700', marginTop: '4px' }}>Starting from {prop.price}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+                    <span style={{
+                      backgroundColor: 'var(--booking-blue)',
+                      color: 'white',
+                      padding: '2px 4px',
+                      borderRadius: '4px 4px 4px 0',
+                      fontSize: '12px',
+                      fontWeight: '700'
+                    }}>{prop.rating}</span>
+                    <span style={{ fontSize: '13px', fontWeight: '500' }}>Exceptional</span>
+                    <span style={{ fontSize: '12px', color: 'var(--booking-text-secondary)' }}>· {prop.reviews} reviews</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
-        </div>
+        {/* Newsletter Section */}
+        <section className="section" style={{
+          backgroundColor: 'var(--booking-blue-dark)',
+          margin: '40px -20px 0',
+          padding: '60px 20px',
+          textAlign: 'center',
+          color: 'white',
+          borderRadius: 'var(--border-radius-md)'
+        }}>
+          <h2 style={{ fontSize: '24px', fontWeight: '300', marginBottom: '8px' }}>Save time, save money!</h2>
+          <p style={{ opacity: 0.7, marginBottom: '24px' }}>Sign up and we'll send the best deals to you</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', maxWidth: '500px', margin: '0 auto' }}>
+            <input 
+              type="text" 
+              placeholder="Your email address" 
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                borderRadius: 'var(--border-radius-sm)',
+                border: 'none',
+                fontSize: '16px'
+              }}
+            />
+            <button style={{
+              backgroundColor: 'var(--booking-blue)',
+              color: 'white',
+              padding: '12px 24px',
+              borderRadius: 'var(--border-radius-sm)',
+              fontWeight: '600',
+              fontSize: '16px'
+            }}>Subscribe</button>
+          </div>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer style={styles.footer}>
-        <p style={styles.footerText}>
-          CSC 489 - Web Application Security • Spring 2026 • University of Southern Mississippi
-        </p>
-        <p style={styles.footerText}>
-          Need help? Office Hours: Tu-Th 3:00-3:55 PM, TEC 380 • oluseyi.olukola@usm.edu
-        </p>
+      <footer className="footer">
+        <div className="container">
+          <div className="footer-links">
+            <div className="footer-column">
+              <h4>Regions</h4>
+              <ul><li>Countries</li><li>Regions</li><li>Cities</li><li>Districts</li><li>Airports</li><li>Hotels</li></ul>
+            </div>
+            <div className="footer-column">
+              <h4>Properties</h4>
+              <ul><li>Homes</li><li>Apartments</li><li>Resorts</li><li>Villas</li><li>Hostels</li><li>B&Bs</li></ul>
+            </div>
+            <div className="footer-column">
+              <h4>Explore</h4>
+              <ul><li>Travel Communities</li><li>Seasonal deals</li><li>Careers</li><li>Safety Resource Center</li><li>How We Work</li></ul>
+            </div>
+            <div className="footer-column">
+              <h4>Support</h4>
+              <ul><li>Customer Service</li><li>Partner Help</li><li>Sustainability</li><li>Security Center</li><li>Investor relations</li></ul>
+            </div>
+            <div className="footer-column">
+              <h4>Safety</h4>
+              <ul><li>Customer Service</li><li>Partner Help</li><li>Sustainability</li><li>Security Center</li><li>Investor relations</li></ul>
+            </div>
+          </div>
+          <div className="footer-bottom">
+            <div className="logo" style={{ color: 'var(--booking-blue)', marginBottom: '16px' }}>Booking.com</div>
+            <p>Copyright © 1996–2026 Booking.com™. All rights reserved.</p>
+          </div>
+        </div>
       </footer>
     </div>
   );
 }
-
-// Styles
-const styles = {
-  pageContainer: {
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-  },
-  
-  // Hero Section
-  hero: {
-    padding: '80px 20px',
-    textAlign: 'center',
-    color: 'white',
-  },
-  heroContent: {
-    maxWidth: '800px',
-    margin: '0 auto',
-  },
-  badge: {
-    display: 'inline-block',
-    padding: '8px 16px',
-    background: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: '20px',
-    fontSize: '14px',
-    fontWeight: '600',
-    marginBottom: '20px',
-    backdropFilter: 'blur(10px)',
-  },
-  heroTitle: {
-    fontSize: '3.5rem',
-    fontWeight: '800',
-    marginBottom: '20px',
-    lineHeight: '1.2',
-  },
-  gradient: {
-    background: 'linear-gradient(45deg, #ffd89b, #19547b)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-  },
-  heroSubtitle: {
-    fontSize: '1.25rem',
-    lineHeight: '1.6',
-    opacity: '0.95',
-    marginBottom: '40px',
-  },
-  
-  // Status Badge
-  statusBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '12px 24px',
-    borderRadius: '30px',
-    fontSize: '15px',
-    fontWeight: '600',
-    marginBottom: '30px',
-    transition: 'all 0.3s ease',
-  },
-  statusConnected: {
-    background: 'rgba(72, 187, 120, 0.2)',
-    border: '2px solid rgba(72, 187, 120, 0.5)',
-    color: '#F0FFF4',
-  },
-  statusDisconnected: {
-    background: 'rgba(245, 101, 101, 0.2)',
-    border: '2px solid rgba(245, 101, 101, 0.5)',
-    color: '#FFF5F5',
-  },
-  statusChecking: {
-    background: 'rgba(237, 137, 54, 0.2)',
-    border: '2px solid rgba(237, 137, 54, 0.5)',
-    color: '#FFFAF0',
-  },
-  statusDot: {
-    width: '10px',
-    height: '10px',
-    borderRadius: '50%',
-    backgroundColor: 'currentColor',
-    animation: 'pulse 2s infinite',
-  },
-  
-  // CTA Button
-  ctaButton: {
-    padding: '16px 40px',
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#667eea',
-    background: 'white',
-    border: 'none',
-    borderRadius: '30px',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-  },
-  
-  // Quick Start
-  quickStart: {
-    background: 'rgba(255, 255, 255, 0.95)',
-    padding: '40px 20px',
-    marginBottom: '40px',
-  },
-  
-  // Main Content
-  main: {
-    background: 'white',
-    minHeight: '100vh',
-    paddingTop: '60px',
-    paddingBottom: '60px',
-  },
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '0 20px',
-  },
-  section: {
-    marginBottom: '80px',
-  },
-  sectionTitle: {
-    fontSize: '2.5rem',
-    fontWeight: '700',
-    color: '#1a202c',
-    marginBottom: '40px',
-    textAlign: 'center',
-  },
-  
-  // Grid Layouts
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '30px',
-  },
-  ideaGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '30px',
-  },
-  
-  // Step Cards
-  stepCard: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    padding: '30px',
-    borderRadius: '16px',
-    color: 'white',
-    textAlign: 'center',
-  },
-  stepNumber: {
-    width: '50px',
-    height: '50px',
-    borderRadius: '50%',
-    background: 'rgba(255, 255, 255, 0.2)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 20px',
-    fontSize: '24px',
-    fontWeight: '700',
-  },
-  stepTitle: {
-    fontSize: '1.25rem',
-    fontWeight: '600',
-    marginBottom: '15px',
-  },
-  code: {
-    display: 'block',
-    background: 'rgba(0, 0, 0, 0.2)',
-    padding: '12px',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontFamily: 'monospace',
-    marginBottom: '10px',
-  },
-  stepDescription: {
-    fontSize: '14px',
-    opacity: '0.9',
-  },
-  
-  // Idea Cards
-  ideaCard: {
-    background: '#f7fafc',
-    padding: '30px',
-    borderRadius: '16px',
-    border: '2px solid #e2e8f0',
-    transition: 'all 0.3s ease',
-    cursor: 'pointer',
-  },
-  ideaIcon: {
-    fontSize: '3rem',
-    marginBottom: '15px',
-  },
-  ideaTitle: {
-    fontSize: '1.25rem',
-    fontWeight: '600',
-    color: '#2d3748',
-    marginBottom: '10px',
-  },
-  ideaText: {
-    color: '#4a5568',
-    fontSize: '0.95rem',
-    lineHeight: '1.6',
-  },
-  
-  // Tech Stack
-  techGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '30px',
-    maxWidth: '800px',
-    margin: '0 auto',
-  },
-  techCard: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    padding: '30px',
-    borderRadius: '16px',
-    textAlign: 'center',
-    color: 'white',
-  },
-  techName: {
-    fontSize: '1.5rem',
-    fontWeight: '700',
-    marginBottom: '10px',
-  },
-  techDesc: {
-    opacity: '0.9',
-  },
-  
-  // Resources
-  resourceGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '30px',
-  },
-  resourceCard: {
-    background: 'white',
-    padding: '30px',
-    borderRadius: '16px',
-    border: '2px solid #e2e8f0',
-    textDecoration: 'none',
-    color: 'inherit',
-    transition: 'all 0.3s ease',
-    display: 'block',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-  },
-  resourceIcon: {
-    fontSize: '3rem',
-    marginBottom: '15px',
-  },
-  resourceTitle: {
-    fontSize: '1.25rem',
-    fontWeight: '600',
-    color: '#2d3748',
-    marginBottom: '10px',
-  },
-  resourceDesc: {
-    color: '#4a5568',
-    fontSize: '0.95rem',
-    lineHeight: '1.6',
-    marginBottom: '15px',
-  },
-  resourceTag: {
-    display: 'inline-block',
-    padding: '6px 12px',
-    background: '#edf2f7',
-    color: '#667eea',
-    borderRadius: '6px',
-    fontSize: '12px',
-    fontWeight: '600',
-  },
-  
-  // Roadmap
-  roadmap: {
-    maxWidth: '700px',
-    margin: '0 auto',
-  },
-  roadmapItem: {
-    display: 'flex',
-    gap: '20px',
-    marginBottom: '30px',
-    alignItems: 'flex-start',
-  },
-  roadmapNumber: {
-    width: '50px',
-    height: '50px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '20px',
-    fontWeight: '700',
-    flexShrink: 0,
-  },
-  roadmapContent: {
-    flex: 1,
-  },
-  roadmapTitle: {
-    fontSize: '1.25rem',
-    fontWeight: '600',
-    color: '#2d3748',
-    marginBottom: '8px',
-  },
-  roadmapDesc: {
-    color: '#4a5568',
-    lineHeight: '1.6',
-  },
-  
-  // Footer CTA
-  footerCTA: {
-    textAlign: 'center',
-    padding: '60px 20px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: '20px',
-    color: 'white',
-    marginTop: '60px',
-  },
-  ctaTitle: {
-    fontSize: '2.5rem',
-    fontWeight: '700',
-    marginBottom: '20px',
-  },
-  ctaText: {
-    fontSize: '1.1rem',
-    marginBottom: '30px',
-    maxWidth: '600px',
-    margin: '0 auto 30px',
-    lineHeight: '1.6',
-  },
-  ctaButtons: {
-    display: 'flex',
-    gap: '20px',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
-  linkButton: {
-    padding: '16px 32px',
-    background: 'white',
-    color: '#667eea',
-    borderRadius: '30px',
-    textDecoration: 'none',
-    fontWeight: '600',
-    transition: 'all 0.3s ease',
-    display: 'inline-block',
-  },
-  linkButtonSecondary: {
-    padding: '16px 32px',
-    background: 'rgba(255, 255, 255, 0.2)',
-    color: 'white',
-    border: '2px solid white',
-    borderRadius: '30px',
-    textDecoration: 'none',
-    fontWeight: '600',
-    transition: 'all 0.3s ease',
-    display: 'inline-block',
-    backdropFilter: 'blur(10px)',
-  },
-  
-  // Footer
-  footer: {
-    background: '#1a202c',
-    color: 'white',
-    padding: '40px 20px',
-    textAlign: 'center',
-  },
-  footerText: {
-    opacity: '0.8',
-    fontSize: '14px',
-    margin: '8px 0',
-  },
-};
