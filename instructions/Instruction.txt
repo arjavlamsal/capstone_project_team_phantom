@@ -1,0 +1,114 @@
+Capstone Project: Milestone 1 – Build a Vulnerable Web Application
+Overview
+The Capstone Project serves as a culminating experience for the course, giving you the opportunity to apply everything you've learned about web application security in a meaningful and practical way. Over four weeks, your team will build, attack, defend, and present a complete web application security project.
+
+Milestone 1 is the foundation phase. Your team will design and build a full-stack web application with intentional security vulnerabilities. This application will be penetration tested by another team in Milestone 2, so you will need to think strategically about both how vulnerabilities are introduced and how easily they can be discovered and exploited. The goal is to simulate how real-world security flaws emerge in production systems through oversight, incomplete controls, and insecure coding patterns.
+
+Full technical details, a boilerplate starter template, an AI Prompt Library, and a Vulnerability Implementation Guide are available in Canvas Files.
+
+Instructions
+
+1. Team Planning
+
+Your team has been pre-assigned. 
+Meet as a team to brainstorm your application concept, define 3–5 core features, and select 6+ vulnerabilities to implement
+Assign roles: Lead Developer, Database Designer, Frontend Designer, Security Tester
+Document your team's plan.
+2. Technical Setup
+
+Build a full-stack application using Next.js 14+ (frontend), Flask 3.0+ (backend), SQLite 3 (database)
+All components must run locally on localhost
+Verify your environment is working before your first build session
+Setup instructions and a boilerplate template are in Canvas Files
+3. Application Design
+
+Build any original web application concept your team chooses; no two teams should build identical apps
+Required features: user authentication, user profiles, user-generated content (posts, comments, etc.), search/filter, state-changing actions (create, update, delete), minimum 3 pages, at least one API endpoint per feature
+Use AI tools (ChatGPT, Claude) to accelerate development. Sample prompts are in the AI Prompt Library on Canvas
+4. Vulnerability Implementation
+
+Your application must include at least 6 exploitable vulnerabilities
+Required (must include all three): SQL Injection, Cross-Site Scripting (XSS), and one Authorization Flaw (IDOR or broken access control)
+Choose 3+ additional from: CSRF, File Upload flaw, Session Management flaw, Information Disclosure, Broken Authentication, Command Injection, or Sensitive Data Exposure
+Each vulnerability must be documented in your PROJECT_SUMMARY.pdf with its location in code, how it works, and an example exploit payload
+5. Testing & Verification
+
+Confirm all features work and the app runs without crashes on a fresh install
+Verify each vulnerability is actually exploitable using basic payloads
+Have at least one team member test the full setup on a clean machine before submitting
+Deliverables
+
+Submit a single ZIP file named TeamName_Milestone1.zip containing:
+
+Source code — full frontend and backend with README.md
+README.md — setup instructions, prerequisites, how to run the app, and default credentials for testing
+PROJECT_SUMMARY.pdf (3–5 pages) — project overview, features implemented with screenshots, vulnerability documentation for each of the 6+, and development notes
+One team member submits on behalf of the group. List all team member names in the submission comments.
+
+Due: Sunday, March 30, 2026 @ 11:59 PM Late submissions: –10% per day (standard course policy)
+
+Rubric
+Capstone Milestone 1 Rubric
+Capstone Milestone 1 Rubric
+Criteria	Ratings	Pts
+This criterion is linked to a Learning OutcomeCompleteness of Recon & Setup
+Proper installation, setup, and reconnaissance performed
+20 to >15.0 pts
+Excellent
+All setup completed, recon thorough and well-documented
+15 to >10.0 pts
+Good
+Most setup completed, recon sufficient but missing minor elements
+10 to >0 pts
+Needs Improvement
+Setup incomplete or recon missing major elements
+20 pts
+This criterion is linked to a Learning OutcomeCorrect Use of Checklist
+Application of OWASP WSTG-based checklist
+15 to >10.0 pts
+Excellent
+Checklist applied fully with justification for test case selection
+10 to >5.0 pts
+Good
+Checklist applied but justification or coverage incomplete
+5 to >0 pts
+Needs Improvement
+Checklist not meaningfully applied
+15 pts
+This criterion is linked to a Learning OutcomeConfiguration Testing Findings
+Identification of security headers and misconfigurations
+10 to >7.0 pts
+Excellent
+All major headers tested and findings clearly documented
+7 to >3.0 pts
+Good
+Some headers tested but documentation incomplete
+3 to >0 pts
+Needs Improvement
+Little or no evidence of header/config testing
+10 pts
+This criterion is linked to a Learning OutcomeDocumented Exploit
+At least one proof-of-concept exploit executed and documented
+25 to >18.0 pts
+Excellent
+Exploit successful, steps and payloads clearly documented
+18 to >10.0 pts
+Good
+Exploit attempted, partially successful or documentation lacking detail
+10 to >0 pts
+Needs Improvement
+Exploit not clearly executed or documented
+25 pts
+This criterion is linked to a Learning OutcomeInterim Report Clarity & Professionalism
+Clarity, structure, and professionalism of interim report
+30 to >20.0 pts
+Excellent
+Well-structured, clear, professional report with visuals inline
+20 to >10.0 pts
+Good
+Report understandable but lacking some structure/clarity
+10 to >0 pts
+Needs Improvement
+Report unclear, missing major required sections
+30 pts
+Total Points: 100
