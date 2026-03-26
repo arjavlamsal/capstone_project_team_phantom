@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Navbar from './components/Navbar';
 
 // Mock Data
 const propertyTypes = [
@@ -40,18 +41,7 @@ export default function Home() {
   return (
     <div className="home-page">
       {/* Navbar */}
-      <nav className="navbar">
-        <div className="container nav-content">
-          <div className="logo">Booking.com</div>
-          <div className="nav-items">
-            <span className="nav-link">GBP</span>
-            <span className="nav-link">🇬🇧</span>
-            <span className="nav-link">List your property</span>
-            <button className="btn-secondary">Register</button>
-            <button className="btn-secondary">Sign in</button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Header Links */}
       <header className="header-links">
