@@ -10,6 +10,7 @@ export default function HotelDetails() {
   const hotelId = params.id;
   const apiBaseUrl =
     process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5001";
+  const fallbackImage = `https://picsum.photos/seed/hotel-${hotelId}/1200/700`;
 
   const [hotel, setHotel] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -112,21 +113,22 @@ export default function HotelDetails() {
         >
           {/* Hotel Details */}
           <div>
-            <div
+            <img
+              src={hotel.image_url || fallbackImage}
+              alt={hotel.name}
               style={{
                 width: "100%",
                 height: "300px",
-                backgroundColor: "#ddd",
+                objectFit: "cover",
                 borderRadius: "var(--border-radius-md)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "64px",
                 marginBottom: "20px",
+                display: "block",
+                backgroundColor: "#ddd",
               }}
-            >
-              🏨
-            </div>
+              onError={(e) => {
+                e.currentTarget.src = fallbackImage;
+              }}
+            />
 
             <h1 style={{ marginBottom: "8px" }}>{hotel.name}</h1>
             <p

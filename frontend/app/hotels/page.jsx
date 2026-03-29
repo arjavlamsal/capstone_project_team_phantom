@@ -7,6 +7,13 @@ import Navbar from "../components/Navbar";
 export default function Hotels() {
   const apiBaseUrl =
     process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5001";
+  const fallbackImages = [
+    "https://picsum.photos/seed/hotel-1/800/500",
+    "https://picsum.photos/seed/hotel-2/800/500",
+    "https://picsum.photos/seed/hotel-3/800/500",
+    "https://picsum.photos/seed/hotel-4/800/500",
+    "https://picsum.photos/seed/hotel-5/800/500",
+  ];
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchCity, setSearchCity] = useState("");
@@ -36,6 +43,11 @@ export default function Hotels() {
   const handleSearch = (e) => {
     e.preventDefault();
     fetchHotels(searchCity);
+  };
+
+  const getHotelImage = (hotel, index) => {
+    if (hotel.image_url && hotel.image_url.trim()) return hotel.image_url;
+    return fallbackImages[index % fallbackImages.length];
   };
 
   return (
@@ -77,7 +89,7 @@ export default function Hotels() {
           </div>
         ) : (
           <div className="grid grid-4" style={{ gap: "20px" }}>
-            {hotels.map((hotel) => (
+            {hotels.map((hotel, index) => (
               <Link key={hotel.id} href={`/hotels/${hotel.id}`}>
                 <div
                   className="card"
@@ -95,19 +107,21 @@ export default function Hotels() {
                     (e.currentTarget.style.boxShadow = "none")
                   }
                 >
-                  <div
+                  <img
+                    src={getHotelImage(hotel, index)}
+                    alt={hotel.name}
                     style={{
                       width: "100%",
                       height: "200px",
+                      objectFit: "cover",
+                      display: "block",
                       backgroundColor: "#ddd",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "48px",
                     }}
-                  >
-                    🏨
-                  </div>
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        fallbackImages[index % fallbackImages.length];
+                    }}
+                  />
                   <div style={{ padding: "12px" }}>
                     <div className="card-title">{hotel.name}</div>
                     <div className="card-subtitle">{hotel.city}</div>

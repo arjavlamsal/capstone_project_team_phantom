@@ -21,8 +21,6 @@ app.secret_key = 'super_secret_key_12345'  # VUL: Hardcoded secret
 # Database configuration
 DATABASE = 'database.db'
 JWT_SECRET = 'jwt_secret_key'  # VUL: Insecure secret
-ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = 'admin123'  # VUL: Hardcoded credentials
 
 def get_db():
     """Get database connection"""
@@ -34,6 +32,13 @@ def init_db():
     """Initialize database with all required tables and seed data if needed"""
     conn = get_db()
     cursor = conn.cursor()
+
+    def ensure_column(table_name, column_name, column_def):
+        existing = {
+            row[1] for row in cursor.execute(f"PRAGMA table_info({table_name})").fetchall()
+        }
+        if column_name not in existing:
+            cursor.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_def}")
 
     # Users table - VUL: No password hashing stored
     cursor.execute('''
@@ -91,17 +96,35 @@ def init_db():
         )
     ''')
 
+    # Handle older local DB files created before new columns were introduced.
+    ensure_column('users', 'full_name', 'TEXT')
+    ensure_column('hotels', 'image_url', 'TEXT')
+    ensure_column('bookings', 'status', "TEXT DEFAULT 'confirmed'")
+
     users_count = cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0]
     hotels_count = cursor.execute("SELECT COUNT(*) FROM hotels").fetchone()[0]
     bookings_count = cursor.execute("SELECT COUNT(*) FROM bookings").fetchone()[0]
     reviews_count = cursor.execute("SELECT COUNT(*) FROM reviews").fetchone()[0]
 
-    # Seed users only when table is empty
-    if users_count == 0:
+    # Ensure test user exists and can always sign in with known credentials
+    test_user = cursor.execute(
+        "SELECT id FROM users WHERE username=?",
+        ('testuser',)
+    ).fetchone()
+
+    if test_user:
+        cursor.execute(
+            "UPDATE users SET password=? WHERE username=?",
+            ('password123', 'testuser')
+        )
+    else:
         cursor.execute(
             "INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)",
             ('testuser', 'testuser@example.com', 'password123', 'Test User')
         )
+
+    # Seed additional users only when table is empty
+    if users_count == 0:
         cursor.execute(
             "INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)",
             ('johndoe', 'john@example.com', 'john123', 'John Doe')
@@ -130,16 +153,27 @@ def init_db():
             (1, 1, '2026-03-30', '2026-04-02', 450.00)
         )
 
-    # Seed sample reviews only when table is empty - VUL: XSS payloads remain intentional
+    # Seed sample reviews only when table is empty
     if reviews_count == 0:
         cursor.execute(
             "INSERT INTO reviews (hotel_id, user_id, rating, comment) VALUES (?, ?, ?, ?)",
-            (1, 1, 5, '<img src=x onerror="alert(\'XSS\')">')
+            (1, 1, 5, 'Great stay. Friendly staff and clean room!')
         )
         cursor.execute(
             "INSERT INTO reviews (hotel_id, user_id, rating, comment) VALUES (?, ?, ?, ?)",
-            (2, 2, 4, 'Great beach resort! <script>alert("XSS")</script>')
+            (2, 2, 4, 'Great beach resort with amazing breakfast!')
         )
+
+    # Replace previously seeded obvious XSS payloads so vulnerability is not revealed on load.
+    # The app remains intentionally vulnerable because user comments are still stored and rendered unsafely.
+    cursor.execute(
+        "UPDATE reviews SET comment = ? WHERE comment = ?",
+        ('Great stay. Friendly staff and clean room!', '<img src=x onerror="alert(\'XSS\')">')
+    )
+    cursor.execute(
+        "UPDATE reviews SET comment = ? WHERE comment = ?",
+        ('Great beach resort with amazing breakfast!', 'Great beach resort! <script>alert("XSS")</script>')
+    )
 
     conn.commit()
     conn.close()
@@ -423,7 +457,7 @@ def home():
             
             <div class="footer">
                 <p class="footer-text">
-                    <strong>Default Credentials:</strong> admin / admin123
+                    <strong>Default Credentials:</strong> testuser / password123
                 </p>
                 <p class="footer-text" style="margin-top: 10px;">
                     Add your features in <code>backend/app.py</code>
@@ -507,21 +541,11 @@ def register():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    """Login user - VUL: Broken authentication, no proper password check"""
+    """Login user - VUL: Broken authentication, plain text password check"""
     try:
         data = request.get_json()
         username = data.get('username', '').strip()
         password = data.get('password', '')
-        
-        # VUL: Admin hardcoded credentials bypass
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            token = jwt.encode({
-                'user_id': 0,
-                'username': ADMIN_USERNAME,
-                'is_admin': True,
-                'exp': datetime.utcnow() + timedelta(days=365)
-            }, JWT_SECRET, algorithm='HS256')
-            return jsonify({'message': 'Login successful', 'token': token, 'user_id': 0})
         
         # VUL: No password hashing verification - plain text comparison
         conn = get_db()
