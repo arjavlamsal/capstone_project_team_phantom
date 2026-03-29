@@ -14,7 +14,7 @@ npm install
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser
+3. Open [http://localhost:3001](http://localhost:3001) in your browser
 
 ## Project Structure
 
@@ -55,7 +55,7 @@ export default function ExamplePage() {
   const [data, setData] = useState(null);
 
   const fetchData = async () => {
-    const response = await fetch('http://localhost:5000/api/test');
+    const response = await fetch('http://localhost:5001/api/test');
     const json = await response.json();
     setData(json);
   };
@@ -72,5 +72,5 @@ export default function ExamplePage() {
 ## Important Notes
 
 - Use `'use client'` at the top of files that use hooks (useState, useEffect, etc.)
-- Backend API is at `http://localhost:5000`
+- Backend API is at `http://localhost:5001`
 - All routes are file-based (folder structure = URL structure)
