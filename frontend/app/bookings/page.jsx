@@ -19,7 +19,9 @@ export default function MyBookings() {
     try {
       setLoading(true);
       // VUL: IDOR vulnerability - can access any user's bookings by changing userId
-      const res = await fetch(`${apiBaseUrl}/api/bookings/user/${userId}`);
+      const res = await fetch(`${apiBaseUrl}/api/bookings/user/${userId}`, {
+        credentials: "include",
+      });
       const data = await res.json();
       setBookings(data);
     } catch (err) {
@@ -36,6 +38,7 @@ export default function MyBookings() {
       // VUL: CSRF vulnerability - no token, VUL: IDOR - can delete any booking
       const res = await fetch(`${apiBaseUrl}/api/bookings/${bookingId}`, {
         method: "DELETE",
+        credentials: "include",
       });
       if (res.ok) {
         alert("Booking deleted");

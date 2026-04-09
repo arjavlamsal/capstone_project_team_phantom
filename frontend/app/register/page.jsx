@@ -27,6 +27,7 @@ export default function Register() {
       const res = await fetch(`${apiBaseUrl}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -37,8 +38,7 @@ export default function Register() {
         return;
       }
 
-      // VUL: Weak session management - storing JWT in localStorage without expiration check
-      localStorage.setItem("token", data.token);
+      // FIX: Relies on HttpOnly cookie
       localStorage.setItem("user_id", data.user_id);
 
       alert("Registration successful!");

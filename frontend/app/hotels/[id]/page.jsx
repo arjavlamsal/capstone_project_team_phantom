@@ -28,7 +28,9 @@ export default function HotelDetails() {
   const fetchHotel = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${apiBaseUrl}/api/hotels/${hotelId}`);
+      const res = await fetch(`${apiBaseUrl}/api/hotels/${hotelId}`, {
+        credentials: "include",
+      });
       const data = await res.json();
       setHotel(data);
     } catch (err) {
@@ -44,6 +46,7 @@ export default function HotelDetails() {
       const res = await fetch(`${apiBaseUrl}/api/hotels/${hotelId}/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           user_id: 1,
           rating: newReview.rating,
@@ -68,6 +71,7 @@ export default function HotelDetails() {
       const res = await fetch(`${apiBaseUrl}/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           user_id: 1,
           hotel_id: hotelId,

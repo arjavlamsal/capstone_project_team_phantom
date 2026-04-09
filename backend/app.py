@@ -13,7 +13,11 @@ import os
 import jwt
 import json
 import html
+import secrets
 from datetime import datetime, timedelta
+from functools import wraps
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import make_response
 
 app = Flask(__name__)
 CORS(app)
@@ -21,7 +25,7 @@ app.secret_key = 'super_secret_key_12345'  # VUL: Hardcoded secret
 
 # Database configuration
 DATABASE = 'database.db'
-JWT_SECRET = 'jwt_secret_key'  # VUL: Insecure secret
+JWT_SECRET = os.environ.get('JWT_SECRET', secrets.token_hex(32))  # FIX: Strong dynamic secret
 
 def get_db():
     """Get database connection"""
@@ -116,19 +120,19 @@ def init_db():
     if test_user:
         cursor.execute(
             "UPDATE users SET password=? WHERE username=?",
-            ('password123', 'testuser')
+            (generate_password_hash('password123'), 'testuser')
         )
     else:
         cursor.execute(
             "INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)",
-            ('testuser', 'testuser@example.com', 'password123', 'Test User')
+            ('testuser', 'testuser@example.com', generate_password_hash('password123'), 'Test User')
         )
 
     # Seed additional users only when table is empty
     if users_count == 0:
         cursor.execute(
             "INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)",
-            ('johndoe', 'john@example.com', 'john123', 'John Doe')
+            ('johndoe', 'john@example.com', generate_password_hash('john123'), 'John Doe')
         )
 
     # Seed hotels only when table is empty
@@ -182,6 +186,21 @@ def init_db():
 
 # Initialize database on startup
 init_db()
+
+# Decorator to enforce token validation securely
+def jwt_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.cookies.get('token')
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 401
+        try:
+            data = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+            request.current_user = data
+        except Exception:
+            return jsonify({'error': 'Token is invalid'}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 # ============================================================================
 # BASIC EXAMPLE ENDPOINTS
@@ -512,30 +531,34 @@ def register():
         data = request.get_json()
         username = data.get('username', '').strip()
         email = data.get('email', '').strip()
-        password = data.get('password', '')  # VUL: Stored in plain text
+        password = data.get('password', '')
         full_name = data.get('full_name', '').strip()
+        
+        # FIX: Password hashing
+        hashed_password = generate_password_hash(password)
         
         conn = get_db()
         conn.execute(
             "INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)",
-            (username, email, password, full_name)
+            (username, email, hashed_password, full_name)
         )
         conn.commit()
         new_user = conn.execute("SELECT id FROM users WHERE username=?", (username,)).fetchone()
         conn.close()
         
-        # VUL: Weak session management - no expiration
+        # FIX: Stronger session management with HttpOnly cookie
         token = jwt.encode({
             'user_id': new_user['id'],
             'username': username,
-            'exp': datetime.utcnow() + timedelta(days=365)  # Excessive expiration
+            'exp': datetime.utcnow() + timedelta(hours=1)
         }, JWT_SECRET, algorithm='HS256')
         
-        return jsonify({
+        resp = make_response(jsonify({
             'message': 'Registration successful',
-            'token': token,
             'user_id': new_user['id']
-        }), 201
+        }))
+        resp.set_cookie('token', token, httponly=True, samesite='Lax', max_age=3600)
+        return resp, 201
     except Exception as e:
         # VUL: Information disclosure - detailed error messages
         return jsonify({'error': str(e), 'type': type(e).__name__}), 400
@@ -548,7 +571,7 @@ def login():
         username = data.get('username', '').strip()
         password = data.get('password', '')
         
-        # VUL: No password hashing verification - plain text comparison
+        # FIX: Password hashing verification
         conn = get_db()
         user = conn.execute(
             "SELECT id, username, password FROM users WHERE username=?",
@@ -556,13 +579,15 @@ def login():
         ).fetchone()
         conn.close()
         
-        if user and user['password'] == password:
+        if user and check_password_hash(user['password'], password):
             token = jwt.encode({
                 'user_id': user['id'],
                 'username': user['username'],
-                'exp': datetime.utcnow() + timedelta(days=365)
+                'exp': datetime.utcnow() + timedelta(hours=1)
             }, JWT_SECRET, algorithm='HS256')
-            return jsonify({'message': 'Login successful', 'token': token, 'user_id': user['id']})
+            resp = make_response(jsonify({'message': 'Login successful', 'user_id': user['id']}))
+            resp.set_cookie('token', token, httponly=True, samesite='Lax', max_age=3600)
+            return resp
         
         return jsonify({'error': 'Invalid credentials'}), 401
     except Exception as e:

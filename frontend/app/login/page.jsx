@@ -25,6 +25,7 @@ export default function Login() {
       const res = await fetch(`${apiBaseUrl}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -35,8 +36,7 @@ export default function Login() {
         return;
       }
 
-      // VUL: Weak session management - storing JWT in localStorage
-      localStorage.setItem("token", data.token);
+      // FIX: Rely on HttpOnly cookie set by server; only store user_id
       localStorage.setItem("user_id", data.user_id);
 
       alert("Login successful!");
@@ -105,27 +105,7 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="auth-divider">
-            <span>Test Credentials</span>
-          </div>
 
-          <div
-            style={{
-              backgroundColor: "#f0f0f0",
-              padding: "12px",
-              borderRadius: "var(--border-radius-sm)",
-              marginBottom: "24px",
-              fontSize: "12px",
-              textAlign: "center",
-            }}
-          >
-            <p style={{ marginBottom: "4px" }}>
-              <strong>Username:</strong> testuser
-            </p>
-            <p>
-              <strong>Password:</strong> password123
-            </p>
-          </div>
 
           <div className="auth-footer">
             <p>
