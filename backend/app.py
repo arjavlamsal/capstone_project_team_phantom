@@ -658,11 +658,13 @@ def get_hotel(hotel_id):
 # ============================================================================
 
 @app.route('/api/bookings', methods=['POST'])
+@jwt_required
 def create_booking():
     """Create a new booking - VUL: No CSRF token, no user verification"""
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
+        # FIX: Force user_id to be the authenticated user
+        user_id = request.current_user['user_id']
         hotel_id = data.get('hotel_id')
         check_in = data.get('check_in_date')
         check_out = data.get('check_out_date')
@@ -698,11 +700,11 @@ def create_booking():
         return jsonify({'error': str(e), 'type': type(e).__name__}), 400
 
 @app.route('/api/bookings/<int:booking_id>', methods=['GET'])
+@jwt_required
 def get_booking(booking_id):
     """Get booking details - VUL: IDOR - no user_id verification!"""
     try:
         conn = get_db()
-        # VUL: IDOR - Returns any booking without checking if current user owns it
         booking = conn.execute(
             "SELECT * FROM bookings WHERE id=?",
             (booking_id,)
@@ -711,16 +713,24 @@ def get_booking(booking_id):
         
         if not booking:
             return jsonify({'error': 'Booking not found'}), 404
+            
+        # FIX: Verify that the current user owns this booking
+        if booking['user_id'] != request.current_user['user_id']:
+            return jsonify({'error': 'Unauthorized'}), 403
         
         return jsonify(dict(booking))
     except Exception as e:
         return jsonify({'error': str(e), 'type': type(e).__name__}), 400
 
 @app.route('/api/bookings/user/<int:user_id>', methods=['GET'])
+@jwt_required
 def get_user_bookings(user_id):
     """Get all bookings for a user - VUL: IDOR - no auth check"""
     try:
-        # VUL: IDOR - Returns any user's bookings without checking if requester is that user
+        # FIX: Check if current user matches requested user_id
+        if user_id != request.current_user['user_id']:
+            return jsonify({'error': 'Unauthorized'}), 403
+            
         conn = get_db()
         bookings = conn.execute(
             "SELECT * FROM bookings WHERE user_id=? ORDER BY created_at DESC",
@@ -733,12 +743,23 @@ def get_user_bookings(user_id):
         return jsonify({'error': str(e), 'type': type(e).__name__}), 400
 
 @app.route('/api/bookings/<int:booking_id>', methods=['DELETE'])
+@jwt_required
 def delete_booking(booking_id):
     """Delete booking - VUL: IDOR vulnerability"""
     try:
         # VUL: No CSRF token validation
-        # VUL: IDOR - Deletes any booking without user verification
+        # FIX: User verification for deletion
         conn = get_db()
+        booking = conn.execute("SELECT user_id FROM bookings WHERE id=?", (booking_id,)).fetchone()
+        
+        if not booking:
+            conn.close()
+            return jsonify({'error': 'Booking not found'}), 404
+            
+        if booking['user_id'] != request.current_user['user_id']:
+            conn.close()
+            return jsonify({'error': 'Unauthorized'}), 403
+            
         conn.execute("DELETE FROM bookings WHERE id=?", (booking_id,))
         conn.commit()
         conn.close()
@@ -752,11 +773,13 @@ def delete_booking(booking_id):
 # ============================================================================
 
 @app.route('/api/hotels/<int:hotel_id>/reviews', methods=['POST'])
+@jwt_required
 def add_review(hotel_id):
     """Add review to hotel - VUL: XSS, No CSRF"""
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
+        # FIX: Set user_id securely directly from token
+        user_id = request.current_user['user_id']
         rating = data.get('rating')
         # FIX: XSS - sanitize comment input
         comment = html.escape(data.get('comment', ''))
