@@ -45,7 +45,7 @@ export default function HotelDetails() {
     try {
       const res = await fetch(`${apiBaseUrl}/api/hotels/${hotelId}/reviews`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
         credentials: "include",
         body: JSON.stringify({
           user_id: 1,
@@ -70,7 +70,7 @@ export default function HotelDetails() {
     try {
       const res = await fetch(`${apiBaseUrl}/api/bookings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
         credentials: "include",
         body: JSON.stringify({
           user_id: 1,

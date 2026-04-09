@@ -24,7 +24,7 @@ export default function Login() {
     try {
       const res = await fetch(`${apiBaseUrl}/api/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
         credentials: "include",
         body: JSON.stringify(formData),
       });

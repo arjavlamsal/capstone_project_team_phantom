@@ -20,7 +20,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask import make_response
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, allow_headers=["Content-Type", "X-Requested-With"])
 app.secret_key = 'super_secret_key_12345'  # VUL: Hardcoded secret
 
 # Database configuration
@@ -186,6 +186,13 @@ def init_db():
 
 # Initialize database on startup
 init_db()
+
+@app.before_request
+def require_csrf_header():
+    # FIX: CSRF Protection using custom header
+    if request.method in ['POST', 'PUT', 'DELETE', 'PATCH']:
+        if request.headers.get('X-Requested-With') != 'XMLHttpRequest':
+            return jsonify({'error': 'CSRF validation failed'}), 403
 
 # Decorator to enforce token validation securely
 def jwt_required(f):

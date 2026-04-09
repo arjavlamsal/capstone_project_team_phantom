@@ -38,6 +38,7 @@ export default function MyBookings() {
       // VUL: CSRF vulnerability - no token, VUL: IDOR - can delete any booking
       const res = await fetch(`${apiBaseUrl}/api/bookings/${bookingId}`, {
         method: "DELETE",
+        headers: { "X-Requested-With": "XMLHttpRequest" },
         credentials: "include",
       });
       if (res.ok) {

@@ -26,7 +26,7 @@ export default function Register() {
     try {
       const res = await fetch(`${apiBaseUrl}/api/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
         credentials: "include",
         body: JSON.stringify(formData),
       });
