@@ -6,22 +6,20 @@ INTENTIONALLY VULNERABLE for Milestone 1 - Web Security Learning
 This application contains 7 documented vulnerabilities for testing
 """
 
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import sqlite3
 import os
 import jwt
-import json
 import html
 import secrets
 from datetime import datetime, timedelta
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import make_response
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, allow_headers=["Content-Type", "X-Requested-With"])
-app.secret_key = 'super_secret_key_12345'  # VUL: Hardcoded secret
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', secrets.token_hex(32))
 
 # Database configuration
 DATABASE = 'database.db'
