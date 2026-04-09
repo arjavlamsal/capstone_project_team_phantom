@@ -12,6 +12,7 @@ import sqlite3
 import os
 import jwt
 import json
+import html
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -732,8 +733,8 @@ def add_review(hotel_id):
         data = request.get_json()
         user_id = data.get('user_id')
         rating = data.get('rating')
-        # VUL: XSS - comment stored without sanitization
-        comment = data.get('comment', '')
+        # FIX: XSS - sanitize comment input
+        comment = html.escape(data.get('comment', ''))
         
         # VUL: No CSRF token validation
         # VUL: No user ownership verification

@@ -245,11 +245,10 @@ export default function HotelDetails() {
                           ★ {review.rating}
                         </span>
                       </div>
-                      {/* VUL: XSS - Comment is rendered without sanitization */}
-                      <div
-                        style={{ color: "var(--booking-text-secondary)" }}
-                        dangerouslySetInnerHTML={{ __html: review.comment }}
-                      />
+                      {/* FIX: Render text securely, preventing XSS */}
+                      <div style={{ color: "var(--booking-text-secondary)" }}>
+                        {review.comment}
+                      </div>
                       <small
                         style={{
                           color: "#999",
