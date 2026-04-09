@@ -57,7 +57,7 @@ cd backend
 
 if command -v uv &> /dev/null; then
     echo "      ✓ Using uv for package management"
-    uv pip install -r requirements.txt
+    uv sync
     USE_UV="true"
 else
     echo "      ⚠️  uv not found. Using pip instead..."
