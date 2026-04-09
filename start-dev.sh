@@ -72,7 +72,7 @@ echo ""
 # Install frontend dependencies
 echo "[2/4] Installing frontend dependencies..."
 cd frontend
-npm install
+bun install
 cd ..
 echo "      ✓ Frontend dependencies installed"
 echo ""
@@ -116,7 +116,7 @@ echo ""
 # Start frontend in background
 FRONTEND_PORT=$(find_free_port 3001)
 echo "[4/4] Starting Next.js Frontend (localhost:${FRONTEND_PORT})..."
-(cd frontend && NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" PORT="$FRONTEND_PORT" npm run dev) &
+(cd frontend && NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" PORT="$FRONTEND_PORT" bun dev) &
 FRONTEND_PID=$!
 FRONTEND_WAS_STARTED="true"
 echo "      ✓ Frontend started (PID: $FRONTEND_PID)"
