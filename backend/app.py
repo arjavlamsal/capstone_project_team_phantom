@@ -583,13 +583,13 @@ def get_hotels():
         
         conn = get_db()
         
-        # VUL: Building SQL query with string concatenation - SQL INJECTION!
         query = "SELECT * FROM hotels WHERE price BETWEEN ? AND ?"
         params = [min_price, max_price]
         
         if city_filter:
-            # VUL: This is vulnerable to SQL injection
-            query += f" AND city LIKE '%{city_filter}%'"
+            # FIX: Use parameterized query to prevent SQL Injection
+            query += " AND city LIKE ?"
+            params.append(f"%{city_filter}%")
         
         hotels = conn.execute(query, params).fetchall()
         conn.close()
@@ -761,9 +761,10 @@ def search():
         query = request.args.get('q', '')
         
         conn = get_db()
-        # VUL: SQL Injection - query parameter concatenated directly
-        sql = f"SELECT * FROM hotels WHERE name LIKE '%{query}%' OR description LIKE '%{query}%'"
-        results = conn.execute(sql).fetchall()
+        # FIX: Parameterized query for search
+        sql = "SELECT * FROM hotels WHERE name LIKE ? OR description LIKE ?"
+        search_pattern = f"%{query}%"
+        results = conn.execute(sql, (search_pattern, search_pattern)).fetchall()
         conn.close()
         
         return jsonify([dict(r) for r in results])
