@@ -568,7 +568,9 @@ def register():
         return resp, 201
     except Exception as e:
         # VUL: Information disclosure - detailed error messages
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -599,7 +601,9 @@ def login():
         return jsonify({'error': 'Invalid credentials'}), 401
     except Exception as e:
         # VUL: Information disclosure
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 # ============================================================================
 # HOTEL ENDPOINTS
@@ -630,7 +634,9 @@ def get_hotels():
         return jsonify([dict(h) for h in hotels])
     except Exception as e:
         # VUL: Information disclosure
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 @app.route('/api/hotels/<int:hotel_id>', methods=['GET'])
 def get_hotel(hotel_id):
@@ -658,7 +664,9 @@ def get_hotel(hotel_id):
         
         return jsonify(hotel_dict)
     except Exception as e:
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 # ============================================================================
 # BOOKING ENDPOINTS
@@ -704,7 +712,9 @@ def create_booking():
             'total_price': total_price
         }), 201
     except Exception as e:
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 @app.route('/api/bookings/<int:booking_id>', methods=['GET'])
 @jwt_required
@@ -727,7 +737,9 @@ def get_booking(booking_id):
         
         return jsonify(dict(booking))
     except Exception as e:
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 @app.route('/api/bookings/user/<int:user_id>', methods=['GET'])
 @jwt_required
@@ -747,7 +759,9 @@ def get_user_bookings(user_id):
         
         return jsonify([dict(b) for b in bookings])
     except Exception as e:
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 @app.route('/api/bookings/<int:booking_id>', methods=['DELETE'])
 @jwt_required
@@ -773,7 +787,9 @@ def delete_booking(booking_id):
         
         return jsonify({'message': 'Booking deleted'})
     except Exception as e:
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 # ============================================================================
 # REVIEW ENDPOINTS
@@ -804,7 +820,9 @@ def add_review(hotel_id):
         
         return jsonify({'message': 'Review added'}), 201
     except Exception as e:
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 # ============================================================================
 # SEARCH ENDPOINT (with SQL Injection)
@@ -826,7 +844,9 @@ def search():
         return jsonify([dict(r) for r in results])
     except Exception as e:
         # VUL: Information disclosure - exposes SQL errors
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 400
+        # FIX: Information Disclosure - log the error and return generic response
+        print(f"Error ({type(e).__name__}): {str(e)}") 
+        return jsonify({'error': 'An internal error occurred.'}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
