@@ -9,11 +9,18 @@ export default function MyBookings() {
     process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5001";
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState(1);
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    fetchBookings();
+    const currentUserId = localStorage.getItem("user_id") || "1";
+    setUserId(parseInt(currentUserId));
   }, []);
+
+  useEffect(() => {
+    if (userId !== "") {
+      fetchBookings();
+    }
+  }, [userId]);
 
   const fetchBookings = async () => {
     try {

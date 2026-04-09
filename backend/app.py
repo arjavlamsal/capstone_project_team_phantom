@@ -605,6 +605,13 @@ def login():
         print(f"Error ({type(e).__name__}): {str(e)}") 
         return jsonify({'error': 'An internal error occurred.'}), 500
 
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    """Logout user by clearing the HttpOnly cookie"""
+    resp = make_response(jsonify({'message': 'Logout successful'}))
+    resp.set_cookie('token', '', expires=0, httponly=True, samesite='Lax')
+    return resp
+
 # ============================================================================
 # HOTEL ENDPOINTS
 # ============================================================================

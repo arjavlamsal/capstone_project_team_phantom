@@ -11,15 +11,24 @@ export default function Navbar({ light = false }) {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     const uid = localStorage.getItem("user_id");
-    if (token && uid) {
+    if (uid) {
       setIsLoggedIn(true);
       setUserId(uid);
     }
   }, [pathname]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5001";
+    try {
+      await fetch(`${apiBaseUrl}/api/logout`, {
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+        credentials: "include",
+      });
+    } catch (e) {
+      console.error("Logout error", e);
+    }
     localStorage.removeItem("token");
     localStorage.removeItem("user_id");
     setIsLoggedIn(false);
